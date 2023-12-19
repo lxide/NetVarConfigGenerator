@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/bin
+/obj
+/NVSConfigExport/bin/
+/NVSConfigExport/obj/
+/NVSConfigExport/obj/project.assets.json
+/NVSConfigExport/obj/project.nuget.cache
+/NVSConfigExport/obj/RDBJsonExport.csproj.nuget.dgspec.json
+/NVSConfigExport/obj/RDBJsonExport.csproj.nuget.g.props
+/NVSConfigExport/bin/Debug/net6.0-windows
