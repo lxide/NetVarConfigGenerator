@@ -48,24 +48,23 @@ namespace RDBJsonExport.SampleCreator
             return targetAddrs;
         }
 
-        public static NVSSet CreateSampleNetGVS(string hostPLC, Config config)
+        public static NVSSet CreateSampleNetGVS(string hostPLC, NetVarConfigSet varConfigSet, Config config)
         {
             List<NVS> NetGVSList = new List<NVS>();
 
-            int i = 0;
-            var tasks = config.Tasks;
-            int taskNumber = tasks.Length;
-            foreach(var netVarTarget in config.NetVar.Targets)
+            foreach(NetVarConfig netVarConfig in varConfigSet.NetVars)
             {
-                if (hostPLC == netVarTarget.Source)
+                foreach (var netVarTarget in netVarConfig.Targets)
                 {
                     var host = GetPlcAddress(netVarTarget.Source, config.Plcs);
                     var target = GetPlcAddress(netVarTarget.Destination, config.Plcs);
 
-                    NetGVSList.Add(CreateNVS(host, target, true,  tasks[i % taskNumber], config.NetVar.MessageSize, config.NetVar.Cycle));
-                    NetGVSList.Add(CreateNVS(host, target, false, tasks[i % taskNumber], config.NetVar.MessageSize, config.NetVar.Cycle));
+                    if (hostPLC == netVarTarget.Source)
+                        NetGVSList.Add(CreateNVS(host, target, true, netVarConfig.Task, netVarConfig.Cycle));
+                    else if (hostPLC == netVarTarget.Destination)
+                        NetGVSList.Add(CreateNVS(host, target, false, netVarConfig.Task, netVarConfig.Cycle));
+
                 }
-                i++;
             }
 
             return new NVSSet()
@@ -74,7 +73,7 @@ namespace RDBJsonExport.SampleCreator
             };
         }
 
-        private static NVS CreateNVS(PLCAddress host, PLCAddress target, bool isSend, PlcTask task, int msgSize, int cycle)
+        private static NVS CreateNVS(PLCAddress host, PLCAddress target, bool isSend, string task, int cycle)
         {
             string gvsName = "NVS_";
             PLCAddress address;
@@ -91,7 +90,7 @@ namespace RDBJsonExport.SampleCreator
             }
 
             List<Variable> variables = new List<Variable>();
-            int length = CreateVariables(gvsName, msgSize, ref variables);
+            int length = CreateVariables(gvsName, ref variables);
             return new NVS() 
             { 
                 Name = gvsName,
@@ -100,13 +99,13 @@ namespace RDBJsonExport.SampleCreator
                 Port = address.Port, 
                 Protocol = "UDP", 
                 ScanCycle = cycle, 
-                TaskName = task.Name, 
+                TaskName = task, 
                 Length = length,
                 Variables = variables.ToArray()
             };
         }
 
-        private static int CreateVariables(string gvsName, int msgSize, ref List<Variable> variables)
+        private static int CreateVariables(string gvsName, ref List<Variable> variables)
         {
             int i = 0;
             int offset = 0;
@@ -117,8 +116,6 @@ namespace RDBJsonExport.SampleCreator
                 AddVariable(gvsName, elemType, i++, offset, ref variables);
 
                 offset += len;
-                if (offset >= msgSize)
-                    break;
             }
             return offset;
         }

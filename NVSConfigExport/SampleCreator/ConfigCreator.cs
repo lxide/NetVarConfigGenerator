@@ -22,7 +22,7 @@ namespace RDBJsonExport.SampleCreator
             {
                 Plcs = CreatePlcs(),
                 Tasks = CreateTasks(),
-                NetVar = CreateNetVar()
+                NetVarSets = CreateNetVarSets()
             };
         }
 
@@ -46,13 +46,40 @@ namespace RDBJsonExport.SampleCreator
             };
         }
 
-        private static NetVarConfig CreateNetVar()
+        private static NetVarConfigSet[] CreateNetVarSets()
+        {
+            List<NetVarConfigSet> netVarSets = new List<NetVarConfigSet>();
+
+            netVarSets.Add(CreateNetVarSet("set1"));
+            netVarSets.Add(CreateNetVarSet("set2"));
+
+            return netVarSets.ToArray();
+        }
+
+        private static NetVarConfigSet CreateNetVarSet(string setName)
+        {
+            return new NetVarConfigSet()
+            {
+                SetName = setName,
+                NetVars = CreateNetVars(setName)
+            };
+        }
+
+        private static NetVarConfig[] CreateNetVars(string setName)
+        {
+            List<NetVarConfig> netVars = new List<NetVarConfig>();
+
+            netVars.Add(CreateNetVar("NVS_1", "Task_Cycle20"));
+            netVars.Add(CreateNetVar("NVS_2", "Task_Cycle10"));
+
+            return netVars.ToArray();
+        }
+        private static NetVarConfig CreateNetVar(string nvsName, string taskName)
         {
             List<NetVarTarget> targets = new List<NetVarTarget>();
-            targets.Add(new NetVarTarget() { Source = "Plc1", Destination = "Plc2"} );
-            targets.Add(new NetVarTarget() { Source = "Plc2", Destination = "Plc1" });
+            targets.Add(new NetVarTarget() { Source = "Plc1", Destination = "Plc2" });
 
-            return new NetVarConfig() { MessageSize = 4000, Cycle = 10, Targets = targets.ToArray() };
+            return new NetVarConfig() { Name = nvsName, Task = taskName, Cycle = 10, Targets = targets.ToArray() };
         }
     }
 }

@@ -12,15 +12,21 @@ namespace RDBJsonExport
     }
     internal class NetVarConfig
     {
-        public short MessageSize { get; set; }
+        public string Name { get; set; }
+        public string Task { get; set; }
         public short Cycle { get; set; }
         public NetVarTarget[] Targets { get; set; }
     }
 
+    internal class NetVarConfigSet
+    {
+        public string SetName { get; set; }
+        public NetVarConfig[] NetVars { get; set; }
+    }
     internal class Config
     {
         public PLCAddress[] Plcs { get; set; }
         public PlcTask[] Tasks { get; set; }
-        public NetVarConfig NetVar { get; set; }
+        public NetVarConfigSet[] NetVarSets { get; set; }
     }
 }

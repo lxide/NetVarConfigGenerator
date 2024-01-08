@@ -27,31 +27,37 @@ namespace RDBJsonExport
             Config config = ConfigCreator.CreateOrLoadConfig(sPath);
 
             foreach(PLCAddress plc in config.Plcs)
-                CreateDataSet(plc.Name, config);
+                CreatePLCData(plc.Name, config);
         }
 
-        static void CreateDataSet(string plcName, Config config)
+        static void CreatePLCData (string plcName, Config config)
+        {
+            foreach (var varConfigSet in config.NetVarSets)
+                CreateDataSet(plcName, config, varConfigSet);
+        }
+
+        static void CreateDataSet(string plcName, Config config, NetVarConfigSet varConfigSet)
         {
             OutData data = new OutData();
 
-            CreateESConfig(plcName, config, data);
+            CreateESConfig(plcName, varConfigSet, config, data);
             GenerateConfig(data);
-            WriteFiles(plcName, data);
+            WriteFiles(plcName, varConfigSet.SetName, data);
         }
 
         // Create sample config as user input
-        static void CreateESConfig(string plcName, Config config, OutData data)
+        static void CreateESConfig(string plcName, NetVarConfigSet varConfigSet, Config config, OutData data)
         {
             // Tasks
             data.PlcTasks = config.Tasks;
-            CreateNetVarConfig(plcName, config, data);
+            CreateNetVarConfig(plcName, varConfigSet, config, data);
         }
 
         // Create sample config as user input
-        static void CreateNetVarConfig(string plcName, Config config, OutData data)
+        static void CreateNetVarConfig(string plcName, NetVarConfigSet varConfigSet, Config config, OutData data)
         {
             // Network Variables
-            data.NVSSet = NVSCreator.CreateSampleNetGVS(plcName, config);
+            data.NVSSet = NVSCreator.CreateSampleNetGVS(plcName, varConfigSet, config);
         }
 
         // Generate Config from ES config
@@ -65,9 +71,9 @@ namespace RDBJsonExport
             data.DDSXMLProfile = NVSXMLProfileCreator.CreateNetVarXMLProfile(data.NVSSet);
         }
 
-        static void WriteFiles(string plcName, OutData data)
+        static void WriteFiles(string plcName, string netvarSetName, OutData data)
         {
-            string path = sPath + plcName + "\\";
+            string path = sPath + plcName + "\\" + netvarSetName + "\\";
             ConfigRW writer = new ConfigRW();
 
             // Write all files
