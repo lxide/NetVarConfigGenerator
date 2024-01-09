@@ -52,7 +52,8 @@ namespace RDBJsonExport.SampleCreator
         {
             List<NVS> NetGVSList = new List<NVS>();
 
-            foreach(NetVarConfig netVarConfig in varConfigSet.NetVars)
+            string setName = varConfigSet.SetName;
+            foreach (NetVarConfig netVarConfig in varConfigSet.NetVars)
             {
                 foreach (var netVarTarget in netVarConfig.Targets)
                 {
@@ -60,9 +61,9 @@ namespace RDBJsonExport.SampleCreator
                     var target = GetPlcAddress(netVarTarget.Destination, config.Plcs);
 
                     if (hostPLC == netVarTarget.Source)
-                        NetGVSList.Add(CreateNVS(host, target, true, netVarConfig.Task, netVarConfig.Cycle));
+                        NetGVSList.Add(CreateNVS(setName, host, target, true, netVarConfig.Task, netVarConfig.Cycle));
                     else if (hostPLC == netVarTarget.Destination)
-                        NetGVSList.Add(CreateNVS(host, target, false, netVarConfig.Task, netVarConfig.Cycle));
+                        NetGVSList.Add(CreateNVS(setName, target, host, false, netVarConfig.Task, netVarConfig.Cycle));
 
                 }
             }
@@ -73,9 +74,9 @@ namespace RDBJsonExport.SampleCreator
             };
         }
 
-        private static NVS CreateNVS(PLCAddress host, PLCAddress target, bool isSend, string task, int cycle)
+        private static NVS CreateNVS(string setName, PLCAddress host, PLCAddress target, bool isSend, string task, int cycle)
         {
-            string gvsName = "NVS_";
+            string gvsName = "NVS_" + setName + "_" + task + "_";
             PLCAddress address;
 
             if (isSend)
