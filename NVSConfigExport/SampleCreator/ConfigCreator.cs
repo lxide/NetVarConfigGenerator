@@ -39,10 +39,10 @@ namespace RDBJsonExport.SampleCreator
         {
             return new PlcTask[]
             {
-                new PlcTask("Task_Cycle20", 20, 50),
-                new PlcTask("Task_Cycle15", 15, 100),
-                new PlcTask("Task_Cycle10", 10, 150),
-                new PlcTask("Task_Cycle5", 5, 200),
+                new PlcTask("Task_Cycle5",  5, 100),
+                new PlcTask("Task_Cycle15", 15, 101),
+                new PlcTask("Task_Cycle1000", 1000, 102),
+                new PlcTask("Task_Cycle2000", 2000, 103),
             };
         }
 
@@ -69,8 +69,8 @@ namespace RDBJsonExport.SampleCreator
         {
             List<NetVarConfig> netVars = new List<NetVarConfig>();
 
-            netVars.Add(CreateNetVar("NVS_1", "Task_Cycle20"));
-            netVars.Add(CreateNetVar("NVS_2", "Task_Cycle10"));
+            netVars.Add(CreateNetVar("NVS_1", "Task_Cycle1000"));
+            netVars.Add(CreateNetVar("NVS_2", "Task_Cycle2000"));
 
             return netVars.ToArray();
         }
